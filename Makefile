@@ -2,20 +2,9 @@
 
 CXX = g++
 CXXFLAGS = -std=c++17
-SRCS = \
-main.cpp \
-src/FinancialData.cpp \
-src/Analysis.cpp \
-src/MonteCarlo.cpp \
-src/PortfolioOptimization.cpp \
-src/TechnicalIndicators.cpp \
-src/RiskMetrics.cpp \
-src/Backtesting.cpp \
-src/BlackScholes.cpp \
-src/PairsTrading.cpp \
-src/EventStudy.cpp \
-src/Greeks.cpp
+SRCS = main.cpp $(wildcard src/*.cpp)
 OBJS = $(SRCS:.cpp=.o)
+TMPFILES = $(wildcard src/*.tmp)
 TARGET = main
 
 all: $(TARGET)
@@ -24,4 +13,4 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) $(TMPFILES)
