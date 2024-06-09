@@ -23,3 +23,19 @@ std::vector<double> MonteCarlo::simulate_price_path(double S0, double mu, double
 
     return price_path;
 }
+
+double MonteCarlo::option_price(double S, double K, double r, double sigma, double T, int num_simulations, bool is_call) {
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::normal_distribution<double> distribution(0.0, 1.0);
+
+    double sum_payoff = 0.0;
+    for (int i = 0; i < num_simulations; ++i) {
+        double ST = S * std::exp((r - 0.5 * sigma * sigma) * T + sigma * std::sqrt(T) * distribution(generator));
+        double payoff = is_call ? std::max(0.0, ST - K) : std::max(0.0, K - ST);
+        sum_payoff += payoff;
+    }
+
+    double option_price = std::exp(-r * T) * sum_payoff / num_simulations;
+    return option_price;
+}
