@@ -11,7 +11,10 @@ src/PortfolioOptimization.cpp \
 src/TechnicalIndicators.cpp \
 src/RiskMetrics.cpp \
 src/Backtesting.cpp \
-src/BlackScholes.cpp
+src/BlackScholes.cpp \
+src/PairsTrading.cpp \
+src/EventStudy.cpp \
+src/Greeks.cpp
 OBJS = $(SRCS:.cpp=.o)
 TARGET = main
 
