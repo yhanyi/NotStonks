@@ -17,12 +17,27 @@ std::vector<double> difference(const std::vector<double>& data, int d) {
 
 // Simplified ARIMA(p,d,q) fitting
 std::vector<double> ARIMA::fit(const std::vector<double>& data, int p, int d, int q) {
-    // Step 1: Difference the data to make it stationary
-    std::vector<double> differenced_data = difference(data, d);
+    // Placeholder code for ARIMA model fitting
+    std::vector<double> residuals = data;  // This is a simplification
 
-    // Placeholder for actual ARIMA model fitting
-    // Here we just return the differenced data as a placeholder
-    return differenced_data;
+    // Difference the data if d > 0
+    for (int i = 0; i < d; ++i) {
+        std::vector<double> differenced_data;
+        for (size_t j = 1; j < residuals.size(); ++j) {
+            differenced_data.push_back(residuals[j] - residuals[j - 1]);
+        }
+        residuals = differenced_data;
+    }
+
+    // Placeholder to simulate ARIMA(p,d,q) model result
+    std::vector<double> result(residuals.size(), 0.0);
+    for (size_t i = 0; i < residuals.size(); ++i) {
+        if (i >= static_cast<size_t>(p)) {
+            result[i] = std::accumulate(residuals.begin() + i - p, residuals.begin() + i, 0.0) / p;
+        }
+    }
+
+    return result;
 }
 
 // Simplified ARIMA prediction
