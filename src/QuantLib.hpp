@@ -3,6 +3,7 @@
 
 #include "Analysis.hpp"
 #include "Backtesting.hpp"
+#include "BlackScholes.hpp"
 #include "FinancialData.hpp"
 #include "MonteCarlo.hpp"
 #include "PortfolioOptimization.hpp"
