@@ -18,8 +18,6 @@
 #include "DenseLayer.hpp"
 #include "LinearAlgebra.hpp"
 
-namespace MLCPP {
-
 template <typename T>
 std::ostream &operator<<(std::ostream &out,
                          std::vector<std::vector<T>> const &A) {
@@ -688,7 +686,5 @@ class NeuralNetwork {
         return;
     }
 };
-
-}  // namespace MLCPP
 
 #endif  // NeuralNetwork_hpp
