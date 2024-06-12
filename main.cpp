@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "ml/MLCPP.hpp"
-#include "quant/QuantLib.hpp"
+#include "trade/QuantLib.hpp"
 
 int main() {
     try {
@@ -248,9 +248,9 @@ int main() {
         MLCPP::NeuralNetwork nn = MLCPP::NeuralNetwork({{4, "none"}, {6, "relu"}, {3, "sigmoid"}});
         nn.summary();
         nn.fit_from_csv("datasets/iris.csv", true, 100, 0.3, false, 2, 32, true);
-        assert(MLCPP::LinearAlgebra::argmax(nn.single_predict({{5, 3.4, 1.6, 0.4}})) == 0);
-        assert(MLCPP::LinearAlgebra::argmax(nn.single_predict({{6.4, 2.9, 4.3, 1.3}})) == 1);
-        assert(MLCPP::LinearAlgebra::argmax(nn.single_predict({{6.2, 3.4, 5.4, 2.3}})) == 2);
+        assert(LinearAlgebra::argmax(nn.single_predict({{5, 3.4, 1.6, 0.4}})) == 0);
+        assert(LinearAlgebra::argmax(nn.single_predict({{6.4, 2.9, 4.3, 1.3}})) == 1);
+        assert(LinearAlgebra::argmax(nn.single_predict({{6.2, 3.4, 5.4, 2.3}})) == 2);
         nn.save_model("test");
 
         // Gradient Descent Example
