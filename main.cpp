@@ -2,13 +2,14 @@
 #include <string>
 #include <vector>
 
-#include "src/QuantLib.hpp"
+#include "ml/MLCPP.hpp"
+#include "quant/QuantLib.hpp"
 
 int main() {
     try {
         // Create a .csv dataset and return the filename for computation.
         std::string filename;
-        filename = "datasets/" + cli();
+        filename = "datasets/finance/" + cli();
 
         FinancialData financial_data(filename);
         std::vector<double> closing_prices = financial_data.get_closing_prices();
@@ -243,6 +244,59 @@ int main() {
 
         // Clear the datasets folder before ending the program.
         clean();
+
+        MLCPP::NeuralNetwork nn = MLCPP::NeuralNetwork({{4, "none"}, {6, "relu"}, {3, "sigmoid"}});
+        nn.summary();
+        nn.fit_from_csv("datasets/iris.csv", true, 100, 0.3, false, 2, 32, true);
+        assert(MLCPP::LinearAlgebra::argmax(nn.single_predict({{5, 3.4, 1.6, 0.4}})) == 0);
+        assert(MLCPP::LinearAlgebra::argmax(nn.single_predict({{6.4, 2.9, 4.3, 1.3}})) == 1);
+        assert(MLCPP::LinearAlgebra::argmax(nn.single_predict({{6.2, 3.4, 5.4, 2.3}})) == 2);
+        nn.save_model("test");
+
+        // Gradient Descent Example
+        MLCPP::GradientDescent gd(0.01);
+        std::vector<double> weights = {0.5, 0.3};
+        std::vector<double> gradients = {0.1, 0.2};
+        gd.update(weights, gradients);
+        std::cout << "Updated weights (GD): " << weights[0] << ", " << weights[1] << std::endl;
+
+        // Adam Optimizer Example
+        MLCPP::AdamOptimizer adam(0.001, 0.9, 0.999, 1e-8);
+        std::vector<double> weights_adam = {0.5, 0.3};
+        std::vector<double> gradients_adam = {0.1, 0.2};
+        adam.update(weights_adam, gradients_adam);
+        std::cout << "Updated weights (Adam): " << weights_adam[0] << ", " << weights_adam[1] << std::endl;
+
+        // Automatic Differentiation Example
+        MLCPP::Variable x(2.0);
+        MLCPP::Variable y(3.0);
+        MLCPP::Variable z = x * y + x;
+        z.set_grad(1.0);
+        std::cout << "Value of z: " << z.value() << ", Gradient of z: " << z.grad() << std::endl;
+
+        // Sparse Matrix Example
+        MLCPP::SparseMatrix sm1(3, 3);
+        MLCPP::SparseMatrix sm2(3, 3);
+        sm1.addValue(0, 0, 1.0);
+        sm1.addValue(1, 1, 2.0);
+        sm1.addValue(2, 2, 3.0);
+        sm2.addValue(0, 0, 4.0);
+        sm2.addValue(1, 1, 5.0);
+        sm2.addValue(2, 2, 6.0);
+        MLCPP::SparseMatrix result = sm1.multiply(sm2);
+        std::cout << "Sparse Matrix Multiplication Result (0,0): " << result.getValue(0, 0) << std::endl;
+
+        // Convolution Example
+        MLCPP::Convolution conv;
+        std::vector<std::vector<double>> input = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        std::vector<std::vector<double>> kernel = {{1, 0}, {0, -1}};
+        auto conv_result = conv.convolve(input, kernel);
+        std::cout << "Convolution Result (1,1): " << conv_result[1][1] << std::endl;
+
+        // Pooling Example
+        MLCPP::Pooling pool;
+        auto pooled_result = pool.pool(input, 2, MLCPP::Pooling::PoolingType::MAX);
+        std::cout << "Pooling Result (0,0): " << pooled_result[0][0] << std::endl;
 
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
