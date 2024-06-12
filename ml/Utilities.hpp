@@ -7,7 +7,6 @@
 #include <tuple>
 #include <vector>
 
-namespace MLCPP {
 class Utilities {
    public:
     template <typename T>
@@ -31,6 +30,5 @@ class Utilities {
     template <typename T>
     static double f1Score(std::vector<T> y, std::vector<T> y_hat);
 };
-}  // namespace MLCPP
 
 #endif  // UTILITIES_HPP
