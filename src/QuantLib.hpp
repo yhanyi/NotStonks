@@ -22,6 +22,7 @@
 #include "LiquidityMetrics.hpp"
 #include "MarketImpactModels.hpp"
 #include "MeanReversion.hpp"
+#include "MomentumTrading.hpp"
 #include "MonteCarlo.hpp"
 #include "OrderBook.hpp"
 #include "OrderFlowAnalysis.hpp"
