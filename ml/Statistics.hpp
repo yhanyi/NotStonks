@@ -5,7 +5,6 @@
 
 #include <vector>
 
-namespace MLCPP {
 class Statistics {
    public:
     static double mean(std::vector<double> x);
@@ -43,6 +42,5 @@ class Statistics {
 
     static double stolarskyMean(double x, double y, double z);
 };
-}  // namespace MLCPP
 
 #endif  // STATISTICS_HPP
