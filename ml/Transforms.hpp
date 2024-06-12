@@ -8,12 +8,10 @@
 
 #include "LinearAlgebra.hpp"
 
-namespace MLCPP {
 class Transforms {
    public:
     template <typename T>
     static std::vector<std::vector<T>> discreteCosineTransform(std::vector<std::vector<T>> x);
 };
-}  // namespace MLCPP
 
 #endif  // TRANSFORMS_HPP
