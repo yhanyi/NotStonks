@@ -1,0 +1,79 @@
+#include "KNearestNeighbours.hpp"
+
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <vector>
+
+#include "LinearAlgebra.hpp"
+#include "Utilities.hpp"
+
+namespace MLCPP {
+class KNearestNeighbours {
+   public:
+    int k;
+    std::vector<std::vector<double>> input;
+    std::vector<double> output;
+
+    KNearestNeighbours(std::vector<std::vector<double>> input, std::vector<double> output, int k)
+        : input(input), output(output), k(k) {
+    }
+
+    std::vector<double> getKNearestNeighbours(std::vector<double> x) {
+        LinearAlgebra linalg;
+        std::vector<double> knn;
+        std::vector<std::vector<double>> inputCopy = input;
+        for (int i = 0; i < k; i++) {
+            int neighbour = 0;
+            double curr = 0, distance = std::numeric_limits<double>::max();
+            for (int j = 0; j < inputCopy.size(); j++) {
+                curr = linalg.euclideanDistance(x, inputCopy[j]);
+                bool nearer = curr < distance;
+                if (nearer) {
+                    neighbour = j;
+                    distance = curr;
+                }
+            }
+            knn.push_back(neighbour);
+            inputCopy.erase(input.begin() + neighbour);
+        }
+        return knn;
+    }
+
+    int getClass(std::vector<double> x) {
+        std::map<int, int> classes;
+        for (int i = 0; i < x.size(); i++) {
+            classes[output.size()] = 0;
+        }
+        for (int i = 0; i < x.size(); i++) {
+            for (int j = 0; j < output.size(); j++) {
+                if (x[i] == output[j]) classes[x[i]]++;
+            }
+        }
+        int max = classes[output[0]], res = output[0];
+        for (auto [i, j] : classes) {
+            if (j >= max) {
+                max = j;
+                res = i;
+            }
+        }
+        return res;
+    }
+
+    int modelTest(std::vector<double> x) {
+        return getClass(getKNearestNeighbours(x));
+    }
+
+    std::vector<double> modelVectorTest(std::vector<std::vector<double>> x) {
+        std::vector<double> y;
+        for (int i = 0; i < x.size(); i++) {
+            y.push_back(modelTest(x[i]));
+        }
+        return y;
+    }
+    double score() {
+        Utilities utilities;
+        return utilities.performance(modelVectorTest(input), output);
+    }
+};
+}  // namespace MLCPP
