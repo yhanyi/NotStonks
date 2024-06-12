@@ -10,8 +10,8 @@ struct DataRow {
     double high;
     double low;
     double close;
-    double volume;
     double adj_close;
+    double volume;
 };
 
 class FinancialData {

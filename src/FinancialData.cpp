@@ -44,9 +44,9 @@ void FinancialData::read_csv(const std::string& filename) {
         std::getline(lineStream, cell, ',');
         row.close = std::stod(cell);
         std::getline(lineStream, cell, ',');
-        row.volume = std::stod(cell);
-        std::getline(lineStream, cell, ',');
         row.adj_close = std::stod(cell);
+        std::getline(lineStream, cell, ',');
+        row.volume = std::stod(cell);
 
         data.push_back(row);
     }
