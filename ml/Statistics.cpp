@@ -47,22 +47,22 @@ double Statistics::chebyshev(double k) {
     return 1 - 1 / (k * k);
 }
 
-double Statistics::weightedMean(std::vector<double> x, std::vector<double> y) { ; }
+double Statistics::weightedMean(std::vector<double> x, std::vector<double> y) { return 0.0; }
 
-double Statistics::geometricMean(std::vector<double> x) { ; }
+double Statistics::geometricMean(std::vector<double> x) { return 0.0; }
 
-double Statistics::harmonicMean(std::vector<double> x) { ; }
+double Statistics::harmonicMean(std::vector<double> x) { return 0.0; }
 
-double Statistics::rms(std::vector<double> x) { ; }
+double Statistics::rms(std::vector<double> x) { return 0.0; }
 
-double Statistics::powerMean(std::vector<double> x, double k) { ; }
+double Statistics::powerMean(std::vector<double> x, double k) { return 0.0; }
 
-double Statistics::lehmerMean(std::vector<double> x, double k) { ; }
+double Statistics::lehmerMean(std::vector<double> x, double k) { return 0.0; }
 
-double Statistics::weightedLehmerMean(std::vector<double> x, std::vector<double> y, double k) { ; }
+double Statistics::weightedLehmerMean(std::vector<double> x, std::vector<double> y, double k) { return 0.0; }
 
-double Statistics::contraHarmonicMean(std::vector<double> x) { ; }
+double Statistics::contraHarmonicMean(std::vector<double> x) { return 0.0; }
 
-double Statistics::logMean(double x, double y) { ; }
+double Statistics::logMean(double x, double y) { return 0.0; }
 
-double Statistics::stolarskyMean(double x, double y, double z) { ; }
+double Statistics::stolarskyMean(double x, double y, double z) { return 0.0; }
