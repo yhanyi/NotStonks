@@ -1,8 +1,3 @@
-// NeuralNetwork_hpp
-
-#ifndef NeuralNetwork_hpp
-#define NeuralNetwork_hpp
-
 #include <algorithm>
 #include <cassert>
 #include <chrono>
@@ -15,8 +10,6 @@
 #include <vector>
 
 #include "ActivationFunctions.hpp"
-#include "DenseLayer.hpp"
-#include "LinearAlgebra.hpp"
 
 template <typename T>
 std::ostream &operator<<(std::ostream &out,
@@ -686,5 +679,3 @@ class NeuralNetwork {
         return;
     }
 };
-
-#endif  // NeuralNetwork_hpp
