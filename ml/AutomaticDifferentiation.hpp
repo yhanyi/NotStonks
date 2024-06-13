@@ -1,7 +1,6 @@
 #ifndef AUTOMATICDIFFERENTIATION_HPP
 #define AUTOMATICDIFFERENTIATION_HPP
 
-namespace MLCPP {
 class Variable {
    public:
     Variable(double value, double grad = 0.0);
@@ -15,5 +14,4 @@ class Variable {
     double value_;
     double grad_;
 };
-}  // namespace MLCPP
 #endif  // AUTOMATICDIFFERENTIATION_HPP

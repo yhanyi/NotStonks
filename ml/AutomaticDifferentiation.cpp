@@ -1,6 +1,5 @@
 #include "AutomaticDifferentiation.hpp"
 
-namespace MLCPP {
 Variable::Variable(double value, double grad) : value_(value), grad_(grad) {}
 
 double Variable::value() const {
@@ -22,4 +21,3 @@ Variable Variable::operator+(const Variable& other) const {
 Variable Variable::operator*(const Variable& other) const {
     return Variable(value_ * other.value_, value_ * other.grad_ + grad_ * other.value_);
 }
-}  // namespace MLCPP
