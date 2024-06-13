@@ -11,7 +11,6 @@
 #include "LinearAlgebra.hpp"
 #include "Utilities.hpp"
 
-namespace MLCPP {
 class KNearestNeighbours {
    public:
     int k;
@@ -30,6 +29,5 @@ class KNearestNeighbours {
 
     double score();
 };
-}  // namespace MLCPP
 
 #endif  // KNEARESTNEIGHBOURS_HPP
