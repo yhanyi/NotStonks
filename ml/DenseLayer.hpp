@@ -9,7 +9,6 @@
 #include "ActivationFunctions.hpp"
 #include "LinearAlgebra.hpp"
 
-namespace MLCPP {
 class DenseLayer {
    public:
     double (*activation_function)(const double &, const bool &);
@@ -34,7 +33,5 @@ class DenseLayer {
    private:
     void setup_activation(const std::string &activation);
 };
-
-}  // namespace MLCPP
 
 #endif  // DENSELAYER_HPP
