@@ -5,7 +5,6 @@
 
 #include <vector>
 
-namespace MLCPP {
 class CostFunctions {
    public:
     // Classification Cost Functions
@@ -28,6 +27,5 @@ class CostFunctions {
 
     double mbe(std::vector<double> y, std::vector<double> y_hat);
 };
-}  // namespace MLCPP
 
 #endif  // COSTFUNCTIONS_HPP
