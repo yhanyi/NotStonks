@@ -2,7 +2,6 @@
 
 #include <unordered_map>
 
-namespace MLCPP {
 SparseMatrix::SparseMatrix(int rows, int cols) : rows_(rows), cols_(cols) {}
 
 void SparseMatrix::addValue(int row, int col, double value) {
@@ -36,4 +35,3 @@ SparseMatrix SparseMatrix::multiply(const SparseMatrix& other) const {
 
     return result;
 }
-}  // namespace MLCPP

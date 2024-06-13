@@ -4,7 +4,6 @@
 #include <tuple>
 #include <vector>
 
-namespace MLCPP {
 class SparseMatrix {
    public:
     SparseMatrix(int rows, int cols);
@@ -16,6 +15,5 @@ class SparseMatrix {
     int rows_, cols_;
     std::vector<std::tuple<int, int, double>> values_;
 };
-}  // namespace MLCPP
 
 #endif  // SPARSEMATRIX_HPP
