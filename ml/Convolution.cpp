@@ -1,6 +1,5 @@
 #include "Convolution.hpp"
 
-namespace MLCPP {
 std::vector<std::vector<double>> Convolution::convolve(const std::vector<std::vector<double>>& input,
                                                        const std::vector<std::vector<double>>& kernel) {
     int rows = input.size();
@@ -32,4 +31,3 @@ double Convolution::applyKernel(const std::vector<std::vector<double>>& input,
 
     return sum;
 }
-}  // namespace MLCPP
