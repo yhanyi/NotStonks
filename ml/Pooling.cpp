@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-namespace MLCPP {
 std::vector<std::vector<double>> Pooling::pool(const std::vector<std::vector<double>>& input,
                                                int poolSize, PoolingType type) {
     int rows = input.size();
@@ -41,4 +40,3 @@ double Pooling::applyAveragePooling(const std::vector<std::vector<double>>& inpu
     }
     return sum / (poolSize * poolSize);
 }
-}  // namespace MLCPP
