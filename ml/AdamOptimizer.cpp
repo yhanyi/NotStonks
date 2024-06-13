@@ -2,7 +2,6 @@
 
 #include <cmath>
 
-namespace MLCPP {
 AdamOptimizer::AdamOptimizer(double learning_rate, double beta1, double beta2, double epsilon)
     : learning_rate_(learning_rate), beta1_(beta1), beta2_(beta2), epsilon_(epsilon), t_(0) {}
 
@@ -16,4 +15,3 @@ void AdamOptimizer::update(std::vector<double>& weights, const std::vector<doubl
         weights[i] -= learning_rate_ * m_hat / (std::sqrt(v_hat) + epsilon_);
     }
 };
-}  // namespace MLCPP

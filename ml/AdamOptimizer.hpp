@@ -3,7 +3,6 @@
 
 #include <vector>
 
-namespace MLCPP {
 class AdamOptimizer {
    public:
     AdamOptimizer(double learning_rate, double beta1, double beta2, double epsilon);
@@ -15,6 +14,5 @@ class AdamOptimizer {
     std::vector<double> m_, v_;
     int t_;
 };
-}  // namespace MLCPP
 
 #endif  // ADAM_OPTIMIZER_HPP
