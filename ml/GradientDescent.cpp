@@ -1,6 +1,5 @@
 #include "GradientDescent.hpp"
 
-namespace MLCPP {
 GradientDescent::GradientDescent(double learning_rate) : learning_rate_(learning_rate) {}
 
 void GradientDescent::update(std::vector<double>& weights, const std::vector<double>& gradients) {
@@ -8,4 +7,3 @@ void GradientDescent::update(std::vector<double>& weights, const std::vector<dou
         weights[i] -= learning_rate_ * gradients[i];
     }
 };
-}  // namespace MLCPP

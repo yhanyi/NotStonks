@@ -3,7 +3,6 @@
 
 #include <vector>
 
-namespace MLCPP {
 class GradientDescent {
    public:
     GradientDescent(double learning_rate);
@@ -12,6 +11,5 @@ class GradientDescent {
    private:
     double learning_rate_;
 };
-}  // namespace MLCPP
 
 #endif  // GRADIENTDESCENT_HPP
