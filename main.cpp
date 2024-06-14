@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "ml/MLCPP.hpp"
@@ -7,13 +8,27 @@
 
 int main() {
     try {
-        // Create a .csv dataset and return the filename for computation.
-        std::string filename;
-        filename = "datasets/finance/" + cli();
+        BrokerAPI brokerAPI;
+        brokerAPI.setDuration(100);
 
-        FinancialData financial_data(filename);
-        std::vector<double> closing_prices = financial_data.get_closing_prices();
-        std::vector<double> market_returns = financial_data.get_closing_prices();  // Use real market data
+        MeanReversion algo1(brokerAPI);
+        MeanReversion algo2(brokerAPI);
+
+        std::thread brokerThread(&BrokerAPI::startPriceGeneration, &brokerAPI, 1000);  // Generate a new price every second
+        std::thread algo1Thread(&MeanReversion::run, &algo1);
+        std::thread algo2Thread(&MeanReversion::run, &algo2);
+
+        brokerThread.join();
+        algo1Thread.join();
+        algo2Thread.join();
+
+        // Create a .csv dataset and return the filename for computation.
+        // std::string filename;
+        // filename = "datasets/finance/" + cli();
+
+        // FinancialData financial_data(filename);
+        // std::vector<double> closing_prices = financial_data.get_closing_prices();
+        // std::vector<double> market_returns = financial_data.get_closing_prices();  // Use real market data
 
         // std::cout << "Mean Closing Price: " << Analysis::mean(closing_prices) << std::endl;
         // std::cout << "Median Closing Price: " << Analysis::median(closing_prices) << std::endl;
@@ -205,34 +220,34 @@ int main() {
         // Strategy Testing
 
         // Mean Reversion Strategy
-        int window_size = 20;
-        double entry_threshold = 2.0;
-        double exit_threshold = 1.0;
-        int holding_period = 7;
-        double cash = 10000.0;
-        double trailing_stop_loss_percentage = 0.05;
-        double fixed_stop_loss_percentage = 0.1;
-        double final_portfolio_value;
+        // int window_size = 20;
+        // double entry_threshold = 2.0;
+        // double exit_threshold = 1.0;
+        // int holding_period = 7;
+        // double cash = 10000.0;
+        // double trailing_stop_loss_percentage = 0.05;
+        // double fixed_stop_loss_percentage = 0.1;
+        // double final_portfolio_value;
 
-        auto z_scores = MeanReversion::calculate_z_score(closing_prices, window_size);
-        auto signals = MeanReversion::generate_signals(z_scores, entry_threshold, exit_threshold, holding_period);
-        final_portfolio_value = MeanReversion::backtest_strategy(signals, closing_prices, trailing_stop_loss_percentage, fixed_stop_loss_percentage, cash);
-        std::cout << "Mean Reversion - Final Portfolio Value: " << final_portfolio_value << std::endl;
-        std::cout << "Mean Reversion - Optimal Parameters" << std::endl;
-        MeanReversion::optimize_parameters(closing_prices);
+        // auto z_scores = MeanReversion::calculate_z_score(closing_prices, window_size);
+        // auto signals = MeanReversion::generate_signals(z_scores, entry_threshold, exit_threshold, holding_period);
+        // final_portfolio_value = MeanReversion::backtest_strategy(signals, closing_prices, trailing_stop_loss_percentage, fixed_stop_loss_percentage, cash);
+        // std::cout << "Mean Reversion - Final Portfolio Value: " << final_portfolio_value << std::endl;
+        // std::cout << "Mean Reversion - Optimal Parameters" << std::endl;
+        // MeanReversion::optimize_parameters(closing_prices);
 
         // Momentum Trading Strategy
-        int rsi_period = 14;
-        double rsi_buy_threshold = 30.0;
-        double rsi_sell_threshold = 70.0;
+        // int rsi_period = 14;
+        // double rsi_buy_threshold = 30.0;
+        // double rsi_sell_threshold = 70.0;
 
-        auto rsi = MomentumTrading::calculate_rsi(closing_prices, rsi_period);
-        signals = MomentumTrading::generate_signals(rsi, rsi_buy_threshold, rsi_sell_threshold);
-        final_portfolio_value = MomentumTrading::backtest_strategy(signals, closing_prices, trailing_stop_loss_percentage, fixed_stop_loss_percentage, cash);
-        std::cout << "Momentum Trading - Final Portfolio Value: " << final_portfolio_value << std::endl;
+        // auto rsi = MomentumTrading::calculate_rsi(closing_prices, rsi_period);
+        // signals = MomentumTrading::generate_signals(rsi, rsi_buy_threshold, rsi_sell_threshold);
+        // final_portfolio_value = MomentumTrading::backtest_strategy(signals, closing_prices, trailing_stop_loss_percentage, fixed_stop_loss_percentage, cash);
+        // std::cout << "Momentum Trading - Final Portfolio Value: " << final_portfolio_value << std::endl;
 
-        std::cout << "Momentum Trading - Optimal Parameters" << std::endl;
-        MomentumTrading::optimize_parameters(closing_prices);
+        // std::cout << "Momentum Trading - Optimal Parameters" << std::endl;
+        // MomentumTrading::optimize_parameters(closing_prices);
 
         // // Event-Driven Backtesting
         // double final_portfolio_value = EventDrivenBacktesting::simulate(closing_prices, signals, 10000, 1);
@@ -243,7 +258,7 @@ int main() {
         // benchmark.run();
 
         // Clear the datasets folder before ending the program.
-        clean();
+        // clean();
 
         // NeuralNetwork nn = NeuralNetwork({{4, "none"}, {6, "relu"}, {3, "sigmoid"}});
         // nn.summary();
