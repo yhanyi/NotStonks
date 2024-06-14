@@ -1,5 +1,5 @@
-#ifndef QUANTLIB_HPP
-#define QUANTLIB_HPP
+#ifndef DROPTIVER_HPP
+#define DROPTIVER_HPP
 
 #include "ARIMA.hpp"
 #include "Analysis.hpp"
@@ -36,5 +36,6 @@
 #include "TechnicalIndicators.hpp"
 #include "TradeVolumeAnalysis.hpp"
 #include "TransactionCostAnalysis.hpp"
+#include "mlcpp/MLCPP.hpp"
 
-#endif  // QUANTLIB_HPP
+#endif  // DROPTIVER_HPP

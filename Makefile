@@ -4,10 +4,10 @@ CXX = g++
 CXXFLAGS = -std=c++17
 SRCS = \
 main.cpp \
-$(wildcard trade/*.cpp) \
-# $(wildcard ml/*.cpp)
+$(wildcard src/*.cpp) \
+# $(wildcard src/mlcpp/*.cpp)
 OBJS = $(SRCS:.cpp=.o)
-TMPFILES = $(wildcard trade/*.tmp) $(wildcard ml/*.tmp)
+TMPFILES = $(wildcard src/*.tmp) $(wildcard src/mlcpp/*.tmp)
 CSVFILES = $(wildcard datasets/finance/*.csv)
 TARGET = main
 

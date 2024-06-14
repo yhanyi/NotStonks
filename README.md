@@ -1,6 +1,7 @@
-# QuantLib
+# Droptiver
 
-A minimal repository of quantitative and machine learning tools written in C++ for learning purposes.
+A minimal and experimental repository of quantitative and machine learning code
+written in C++ for learning purposes.
 
 - Compile with `make`, run with `./main`, clean with `make clean`.
 - Upon running `./main`, the user will be prompted to enter a ticker, a start-date, end-date and filename.
