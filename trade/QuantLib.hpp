@@ -8,6 +8,7 @@
 #include "Benchmark.hpp"
 #include "BinomialTree.hpp"
 #include "BlackScholes.hpp"
+#include "BrokerAPI.hpp"
 #include "Cointegration.hpp"
 #include "EventDrivenBacktesting.hpp"
 #include "EventStudy.hpp"
