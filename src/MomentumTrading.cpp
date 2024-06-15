@@ -5,6 +5,38 @@
 #include <numeric>
 #include <vector>
 
+void MomentumTrading::run() {
+    while (brokerAPI.isRunning()) {
+        trade();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
+void MomentumTrading::trade() {
+    const auto& prices = brokerAPI.getPrices();
+    if (prices.size() < 14) return;  // Wait until we have enough data for RSI calculation
+
+    int rsi_period = 14;
+    auto rsi = calculate_rsi(prices, rsi_period);
+    auto signals = generate_signals(rsi, 30.0, 70.0);
+
+    // Example of using signals to buy/sell
+    int last_signal = signals.back();
+    double latest_price = brokerAPI.getLatestPrice();
+
+    if (last_signal == 1 && cash >= latest_price * 5) {
+        brokerAPI.buy(5);  // Example buy action
+        cash -= latest_price * 5;
+        shares += 5;
+        std::cout << "MomentumTrading buys 5 shares at " << latest_price << " price" << std::endl;
+    } else if (last_signal == -1 && shares >= 5) {
+        brokerAPI.sell(5);  // Example sell action
+        cash += latest_price * 5;
+        shares -= 5;
+        std::cout << "MomentumTrading sells 5 shares at " << latest_price << " price" << std::endl;
+    }
+}
+
 std::vector<double> MomentumTrading::calculate_rsi(const std::vector<double>& prices, int period = 14) {
     std::vector<double> rsi;
     if (prices.size() <= period) return rsi;
