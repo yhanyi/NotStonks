@@ -6,6 +6,38 @@
 #include <numeric>
 #include <thread>
 
+void MeanReversion::run() {
+    while (brokerAPI.isRunning()) {
+        trade();
+        std::this_thread::sleep_for(std::chrono::seconds(1));  // Adjust the sleep time as needed
+    }
+}
+
+void MeanReversion::trade() {
+    const auto& prices = brokerAPI.getPrices();
+    if (prices.size() < 20) return;  // Wait until we have enough data
+
+    int window_size = 20;
+    auto z_scores = calculate_z_score(prices, window_size);
+    auto signals = generate_signals(z_scores, 1.0, 0.5, 5);
+
+    // Example of using signals to buy/sell
+    int last_signal = signals.back();
+    double latest_price = brokerAPI.getLatestPrice();
+
+    if (last_signal == 1 && cash >= latest_price * 5) {
+        brokerAPI.buy(5);  // Example buy action
+        cash -= latest_price * 5;
+        shares += 5;
+        std::cout << "MeanReversion buys 5 shares at " << latest_price << " price" << std::endl;
+    } else if (last_signal == -1 && shares >= 5) {
+        brokerAPI.sell(5);  // Example sell action
+        cash += latest_price * 5;
+        shares -= 5;
+        std::cout << "MeanReversion sells 5 shares at " << latest_price << " price" << std::endl;
+    }
+}
+
 std::vector<double> MeanReversion::calculate_moving_average(const std::vector<double>& data, int window_size) {
     std::vector<double> moving_averages(data.size(), 0.0);
     double sum = 0.0;
@@ -141,30 +173,4 @@ void MeanReversion::optimize_parameters(const std::vector<double>& prices) {
     std::cout << "Trailing Stop Loss Percentage: " << best_trailing_stop_loss_percentage << std::endl;
     std::cout << "Fixed Stop Loss Percentage: " << best_fixed_stop_loss_percentage << std::endl;
     std::cout << "Best Portfolio Value: " << best_portfolio_value << std::endl;
-}
-
-void MeanReversion::run() {
-    while (brokerAPI.isRunning()) {
-        trade();
-        std::this_thread::sleep_for(std::chrono::seconds(1));  // Adjust the sleep time as needed
-    }
-}
-
-void MeanReversion::trade() {
-    const auto& prices = brokerAPI.getPrices();
-    if (prices.size() < 20) return;  // Wait until we have enough data
-
-    int window_size = 20;
-    auto z_scores = calculate_z_score(prices, window_size);
-    auto signals = generate_signals(z_scores, 1.0, 0.5, 5);
-
-    // Example of using signals to buy/sell
-    int last_signal = signals.back();
-    double latest_price = brokerAPI.getLatestPrice();
-
-    if (last_signal == 1) {
-        brokerAPI.buy(5);  // Example buy action
-    } else if (last_signal == -1) {
-        brokerAPI.sell(5);  // Example sell action
-    }
 }
