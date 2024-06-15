@@ -7,19 +7,37 @@
 
 int main() {
     try {
-        BrokerAPI brokerAPI;
-        brokerAPI.setDuration(100);
+        std::string filename;
+        filename = "datasets/finance/" + cli();
 
-        MeanReversion algo1(brokerAPI);
-        MeanReversion algo2(brokerAPI);
+        BrokerAPI broker;
+        broker.loadPrices(filename);
+        broker.setDuration(100);  // Set duration to 100 seconds
 
-        std::thread brokerThread(&BrokerAPI::startPriceGeneration, &brokerAPI, 1000);  // Generate a new price every second
-        std::thread algo1Thread(&MeanReversion::run, &algo1);
-        std::thread algo2Thread(&MeanReversion::run, &algo2);
+        // Instantiate trading algorithms
+        MeanReversion meanReversion1(broker, 10000.0, 0);
+        MeanReversion meanReversion2(broker, 10000.0, 0);
+        MomentumTrading momentumTrading(broker, 10000.0, 0);
 
-        brokerThread.join();
-        algo1Thread.join();
-        algo2Thread.join();
+        // Start trading algorithms in separate threads
+        std::thread mean_reversion_thread1(&MeanReversion::run, &meanReversion1);
+        std::thread mean_reversion_thread2(&MeanReversion::run, &meanReversion2);
+        std::thread momentum_trading_thread(&MomentumTrading::run, &momentumTrading);
+
+        // Wait for all threads to finish
+        broker.startPriceGeneration(1000);
+
+        mean_reversion_thread1.join();
+        mean_reversion_thread2.join();
+        momentum_trading_thread.join();
+
+        std::cout << "MeanReversion final portfolio value: " << meanReversion1.calculate_portfolio_value() << std::endl;
+        std::cout << "MeanReversion final portfolio value: " << meanReversion2.calculate_portfolio_value() << std::endl;
+        std::cout << "MomentumTrading final portfolio value: " << momentumTrading.calculate_portfolio_value() << std::endl;
+
+        clean();
+
+        return 0;
 
         // Create a .csv dataset and return the filename for computation.
         // std::string filename;
