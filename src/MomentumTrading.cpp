@@ -13,27 +13,44 @@ void MomentumTrading::run() {
 }
 
 void MomentumTrading::trade() {
-    const auto& prices = brokerAPI.getPrices();
-    if (prices.size() < 14) return;  // Wait until we have enough data for RSI calculation
+    // double currentPrice = brokerAPI.getLatestPrice();
+    // // Always buy if there's enough cash
+    // if (cash >= currentPrice) {
+    //     int sharesToBuy = 1;
+    //     brokerAPI.buy(sharesToBuy);
+    //     cash -= sharesToBuy * currentPrice;
+    //     shares += sharesToBuy;
+    //     std::cout << "MomentumTrading buys " << sharesToBuy << " shares at " << currentPrice << " price" << std::endl;
+    // }
+    // // Always sell if there are shares to sell
+    // else if (shares > 0) {
+    //     int sharesToSell = 1;
+    //     brokerAPI.sell(sharesToSell);
+    //     cash += sharesToSell * currentPrice;
+    //     shares -= sharesToSell;
+    //     std::cout << "MomentumTrading sells " << sharesToSell << " shares at " << currentPrice << " price" << std::endl;
+    // }
+    const std::vector<double>& prices = brokerAPI.getPrices();
+    if (prices.size() < 15) return;  // Ensure we have enough data points
 
-    int rsi_period = 14;
-    auto rsi = calculate_rsi(prices, rsi_period);
-    auto signals = generate_signals(rsi, 30.0, 70.0);
+    auto rsi = calculate_rsi(prices, 14);
+    auto signals = generate_signals(rsi, 30, 70);
 
-    // Example of using signals to buy/sell
-    int last_signal = signals.back();
-    double latest_price = brokerAPI.getLatestPrice();
+    int lastSignal = signals.back();
+    double currentPrice = prices.back();
 
-    if (last_signal == 1 && cash >= latest_price * 5) {
-        brokerAPI.buy(5);  // Example buy action
-        cash -= latest_price * 5;
-        shares += 5;
-        std::cout << "MomentumTrading buys 5 shares at " << latest_price << " price" << std::endl;
-    } else if (last_signal == -1 && shares >= 5) {
-        brokerAPI.sell(5);  // Example sell action
-        cash += latest_price * 5;
-        shares -= 5;
-        std::cout << "MomentumTrading sells 5 shares at " << latest_price << " price" << std::endl;
+    if (lastSignal == 1 && cash >= currentPrice) {
+        int sharesToBuy = static_cast<int>(cash / currentPrice);
+        brokerAPI.buy(sharesToBuy);
+        cash -= sharesToBuy * currentPrice;
+        shares += sharesToBuy;
+        std::cout << "MomentumTrading buys " << sharesToBuy << " shares at " << currentPrice << " price" << std::endl;
+    } else if (lastSignal == -1 && shares > 0) {
+        int sharesToSell = shares;
+        brokerAPI.sell(sharesToSell);
+        cash += sharesToSell * currentPrice;
+        shares -= sharesToSell;
+        std::cout << "MomentumTrading sells " << sharesToSell << " shares at " << currentPrice << " price" << std::endl;
     }
 }
 
