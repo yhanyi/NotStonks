@@ -8,14 +8,17 @@
 #include <ctime>
 #include <iostream>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
+
+#include "FinancialData.hpp"
 
 class BrokerAPI {
    public:
     BrokerAPI() : running(false), duration(0) {
         std::srand(std::time(0));
-        prices = {100, 102, 101, 105, 107, 110, 108, 106, 109, 111, 115, 114, 112, 113, 117, 116, 118, 120, 122, 121};
+        prices = {};
     }
 
     ~BrokerAPI() {
@@ -43,6 +46,7 @@ class BrokerAPI {
                     running = false;
                 }
             }
+            reset();
         });
     }
 
@@ -65,12 +69,21 @@ class BrokerAPI {
 
     void buy(int shares) {
         std::lock_guard<std::mutex> lock(mutex);
-        std::cout << "Bought " << shares << " shares at price: " << prices.back() << "\n";
     }
 
     void sell(int shares) {
         std::lock_guard<std::mutex> lock(mutex);
-        std::cout << "Sold " << shares << " shares at price: " << prices.back() << "\n";
+    }
+
+    void loadPrices(const std::string& filename) {
+        FinancialData data(filename);
+        this->prices = data.get_closing_prices();
+        std::cout << "Size: " << this->prices.size() << std::endl;
+    }
+
+    void reset() {
+        std::lock_guard<std::mutex> lock(mutex);
+        prices.clear();
     }
 
    private:
@@ -83,6 +96,7 @@ class BrokerAPI {
         if (prices.size() > 100) {
             prices.erase(prices.begin());
         }
+        std::cout << "New price generated: " << newPrice << "\n";
     }
 
     std::vector<double> prices;
