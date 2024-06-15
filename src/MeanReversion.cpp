@@ -14,27 +14,49 @@ void MeanReversion::run() {
 }
 
 void MeanReversion::trade() {
-    const auto& prices = brokerAPI.getPrices();
-    if (prices.size() < 20) return;  // Wait until we have enough data
+    // double currentPrice = brokerAPI.getLatestPrice();
+    // // Always buy if there's enough cash
+    // if (cash >= currentPrice) {
+    //     int sharesToBuy = 1;
+    //     brokerAPI.buy(sharesToBuy);
+    //     cash -= sharesToBuy * currentPrice;
+    //     shares += sharesToBuy;
+    //     std::cout << "MeanReversion buys " << sharesToBuy << " shares at " << currentPrice << " price" << std::endl;
+    // }
+    // // Always sell if there are shares to sell
+    // else if (shares > 0) {
+    //     int sharesToSell = 1;
+    //     brokerAPI.sell(sharesToSell);
+    //     cash += sharesToSell * currentPrice;
+    //     shares -= sharesToSell;
+    //     std::cout << "MeanReversion sells " << sharesToSell << " shares at " << currentPrice << " price" << std::endl;
+    // }
 
-    int window_size = 20;
-    auto z_scores = calculate_z_score(prices, window_size);
-    auto signals = generate_signals(z_scores, 1.0, 0.5, 5);
+    const std::vector<double>& prices = brokerAPI.getPrices();
+    if (prices.size() < 20) return;  // Ensure we have enough data points
 
-    // Example of using signals to buy/sell
-    int last_signal = signals.back();
-    double latest_price = brokerAPI.getLatestPrice();
+    double sum = 0;
+    for (size_t i = prices.size() - 20; i < prices.size(); ++i) {
+        sum += prices[i];
+    }
+    double movingAverage = sum / 20;
+    double currentPrice = prices.back();
 
-    if (last_signal == 1 && cash >= latest_price * 5) {
-        brokerAPI.buy(5);  // Example buy action
-        cash -= latest_price * 5;
-        shares += 5;
-        std::cout << "MeanReversion buys 5 shares at " << latest_price << " price" << std::endl;
-    } else if (last_signal == -1 && shares >= 5) {
-        brokerAPI.sell(5);  // Example sell action
-        cash += latest_price * 5;
-        shares -= 5;
-        std::cout << "MeanReversion sells 5 shares at " << latest_price << " price" << std::endl;
+    // Buy if the current price is 1% below the moving average
+    if (currentPrice < movingAverage * 0.99 && cash >= currentPrice) {
+        int sharesToBuy = static_cast<int>(cash / currentPrice);
+        brokerAPI.buy(sharesToBuy);
+        cash -= sharesToBuy * currentPrice;
+        shares += sharesToBuy;
+        std::cout << "MeanReversion buys " << sharesToBuy << " shares at " << currentPrice << " price" << std::endl;
+    }
+    // Sell if the current price is 1% above the moving average
+    else if (currentPrice > movingAverage * 1.01 && shares > 0) {
+        int sharesToSell = shares;
+        brokerAPI.sell(sharesToSell);
+        cash += sharesToSell * currentPrice;
+        shares -= sharesToSell;
+        std::cout << "MeanReversion sells " << sharesToSell << " shares at " << currentPrice << " price" << std::endl;
     }
 }
 
