@@ -9,55 +9,46 @@
 void MeanReversion::run() {
     while (brokerAPI.isRunning()) {
         trade();
-        std::this_thread::sleep_for(std::chrono::seconds(1));  // Adjust the sleep time as needed
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
 void MeanReversion::trade() {
-    // double currentPrice = brokerAPI.getLatestPrice();
-    // // Always buy if there's enough cash
-    // if (cash >= currentPrice) {
-    //     int sharesToBuy = 1;
-    //     brokerAPI.buy(sharesToBuy);
-    //     cash -= sharesToBuy * currentPrice;
-    //     shares += sharesToBuy;
-    //     std::cout << "MeanReversion buys " << sharesToBuy << " shares at " << currentPrice << " price" << std::endl;
-    // }
-    // // Always sell if there are shares to sell
-    // else if (shares > 0) {
-    //     int sharesToSell = 1;
-    //     brokerAPI.sell(sharesToSell);
-    //     cash += sharesToSell * currentPrice;
-    //     shares -= sharesToSell;
-    //     std::cout << "MeanReversion sells " << sharesToSell << " shares at " << currentPrice << " price" << std::endl;
-    // }
-
     const std::vector<double>& prices = brokerAPI.getPrices();
-    if (prices.size() < 20) return;  // Ensure we have enough data points
+    std::string logMessage;
 
-    double sum = 0;
-    for (size_t i = prices.size() - 20; i < prices.size(); ++i) {
-        sum += prices[i];
+    if (prices.size() < 20) {
+        logMessage = "MeanReversion: Not enough data points to make a decision.";
+        std::lock_guard<std::mutex> lock(logMutex);
+        std::cout << logMessage << std::endl;
+        return;
     }
-    double movingAverage = sum / 20;
+
+    auto z_scores = calculate_z_score(prices, 20);
+    auto signals = generate_signals(z_scores, 1.0, 0.5, 5);
+
+    int lastSignal = signals.back();
     double currentPrice = prices.back();
 
-    // Buy if the current price is 1% below the moving average
-    if (currentPrice < movingAverage * 0.99 && cash >= currentPrice) {
+    if (lastSignal == 1 && cash >= currentPrice) {
         int sharesToBuy = static_cast<int>(cash / currentPrice);
         brokerAPI.buy(sharesToBuy);
         cash -= sharesToBuy * currentPrice;
         shares += sharesToBuy;
-        std::cout << "MeanReversion buys " << sharesToBuy << " shares at " << currentPrice << " price" << std::endl;
+
+        logMessage = "MeanReversion buys " + std::to_string(sharesToBuy) + " shares at " + std::to_string(currentPrice) + " price";
+    } else if (lastSignal == -1 && shares > 0) {
+        brokerAPI.sell(shares);
+        cash += shares * currentPrice;
+
+        logMessage = "MeanReversion sells " + std::to_string(shares) + " shares at " + std::to_string(currentPrice) + " price";
+        shares = 0;
+    } else {
+        logMessage = "MeanReversion: No trade decision made.";
     }
-    // Sell if the current price is 1% above the moving average
-    else if (currentPrice > movingAverage * 1.01 && shares > 0) {
-        int sharesToSell = shares;
-        brokerAPI.sell(sharesToSell);
-        cash += sharesToSell * currentPrice;
-        shares -= sharesToSell;
-        std::cout << "MeanReversion sells " << sharesToSell << " shares at " << currentPrice << " price" << std::endl;
-    }
+
+    std::lock_guard<std::mutex> lock(logMutex);
+    std::cout << logMessage << std::endl;
 }
 
 std::vector<double> MeanReversion::calculate_moving_average(const std::vector<double>& data, int window_size) {
@@ -123,76 +114,56 @@ std::vector<int> MeanReversion::generate_signals(const std::vector<double>& z_sc
     return signals;
 }
 
-double MeanReversion::backtest_strategy(const std::vector<int>& signals, const std::vector<double>& prices, double trailing_stop_loss_percentage, double fixed_stop_loss_percentage, double cash = 10000.0) {
-    double position = 0.0;             // Current position in stock
-    double entry_price = 0.0;          // Entry price for current position
-    double trailing_stop_price = 0.0;  // Trailing stop price
-    double fixed_stop_price = 0.0;     // Fixed stop price
-
+double MeanReversion::backtest_strategy(const std::vector<int>& signals, const std::vector<double>& prices, double trailing_stop_loss_percentage, double fixed_stop_loss_percentage, double cash) {
+    double portfolio_value = cash;
+    int shares = 0;
     for (size_t i = 0; i < signals.size(); ++i) {
-        if (signals[i] == 1 && cash > 0) {  // Buy
-            position = cash / prices[i];
-            entry_price = prices[i];
-            trailing_stop_price = entry_price * (1 - trailing_stop_loss_percentage);
-            fixed_stop_price = entry_price * (1 - fixed_stop_loss_percentage);
-            cash = 0;
-        } else if (signals[i] == -1 && position > 0) {  // Sell
-            cash = position * prices[i];
-            position = 0;
+        if (signals[i] == 1 && cash >= prices[i]) {
+            int sharesToBuy = static_cast<int>(cash / prices[i]);
+            portfolio_value += sharesToBuy * (prices[i + 1] - prices[i]);
+            shares += sharesToBuy;
+            cash -= sharesToBuy * prices[i];
+        } else if (signals[i] == -1 && shares > 0) {
+            portfolio_value += shares * (prices[i + 1] - prices[i]);
+            cash += shares * prices[i];
+            shares = 0;
         }
-
-        // Update trailing stop price
-        if (position > 0) {
-            trailing_stop_price = std::max(trailing_stop_price, prices[i] * (1 - trailing_stop_loss_percentage));
-            // Check if trailing stop or fixed stop is hit
-            if (prices[i] < trailing_stop_price || prices[i] < fixed_stop_price) {
-                cash = position * prices[i];
-                position = 0;
-            }
+        double current_value = cash + shares * prices[i];
+        if (current_value / portfolio_value - 1 < -fixed_stop_loss_percentage) {
+            portfolio_value = current_value;
+            break;
         }
     }
-
-    return cash + position * prices.back();  // Final portfolio value
+    return portfolio_value;
 }
 
 void MeanReversion::optimize_parameters(const std::vector<double>& prices) {
-    double best_portfolio_value = 0.0;
-    int best_moving_average_period = 20;
-    double best_buy_threshold = 0.05;
-    double best_sell_threshold = 0.05;
-    double best_trailing_stop_loss_percentage = 0.05;
-    double best_fixed_stop_loss_percentage = 0.1;
+    double best_portfolio_value = -std::numeric_limits<double>::infinity();
+    int best_window_size = 20;
+    double best_entry_threshold = 1.0;
+    double best_exit_threshold = 0.5;
+    int best_holding_period = 5;
 
-    for (int ma_period = 10; ma_period <= 50; ma_period += 10) {
-        for (double buy_threshold = 0.02; buy_threshold <= 0.1; buy_threshold += 0.02) {
-            for (double sell_threshold = 0.02; sell_threshold <= 0.1; sell_threshold += 0.02) {
-                for (double trailing_stop_loss_percentage = 0.02; trailing_stop_loss_percentage <= 0.1; trailing_stop_loss_percentage += 0.02) {
-                    for (double fixed_stop_loss_percentage = 0.05; fixed_stop_loss_percentage <= 0.2; fixed_stop_loss_percentage += 0.05) {
-                        auto moving_average = MeanReversion::calculate_moving_average(prices, ma_period);
-                        auto standard_deviations = MeanReversion::calculate_standard_deviation(prices, ma_period);
-                        auto z_score = MeanReversion::calculate_z_score(prices, ma_period);
-                        auto signals = MeanReversion::generate_signals(z_score, best_buy_threshold, best_sell_threshold, ma_period);
-                        double portfolio_value = MeanReversion::backtest_strategy(signals, prices, trailing_stop_loss_percentage, fixed_stop_loss_percentage);
-
-                        if (portfolio_value > best_portfolio_value) {
-                            best_portfolio_value = portfolio_value;
-                            best_moving_average_period = ma_period;
-                            best_buy_threshold = buy_threshold;
-                            best_sell_threshold = sell_threshold;
-                            best_trailing_stop_loss_percentage = trailing_stop_loss_percentage;
-                            best_fixed_stop_loss_percentage = fixed_stop_loss_percentage;
-                        }
+    for (int window_size = 10; window_size <= 50; window_size += 10) {
+        for (double entry_threshold = 0.5; entry_threshold <= 2.0; entry_threshold += 0.5) {
+            for (double exit_threshold = 0.1; exit_threshold <= 1.0; exit_threshold += 0.1) {
+                for (int holding_period = 5; holding_period <= 20; holding_period += 5) {
+                    auto z_scores = calculate_z_score(prices, window_size);
+                    auto signals = generate_signals(z_scores, entry_threshold, exit_threshold, holding_period);
+                    double portfolio_value = backtest_strategy(signals, prices, 0.1, 0.2, 10000.0);
+                    if (portfolio_value > best_portfolio_value) {
+                        best_portfolio_value = portfolio_value;
+                        best_window_size = window_size;
+                        best_entry_threshold = entry_threshold;
+                        best_exit_threshold = exit_threshold;
+                        best_holding_period = holding_period;
                     }
                 }
             }
         }
     }
-
-    std::cout << "Optimized Parameters: " << std::endl;
-    std::cout << "Moving Average Period: " << best_moving_average_period << std::endl;
-    std::cout << "Buy Threshold: " << best_buy_threshold << std::endl;
-    std::cout << "Sell Threshold: " << best_sell_threshold << std::endl;
-    std::cout << "Trailing Stop Loss Percentage: " << best_trailing_stop_loss_percentage << std::endl;
-    std::cout << "Fixed Stop Loss Percentage: " << best_fixed_stop_loss_percentage << std::endl;
-    std::cout << "Best Portfolio Value: " << best_portfolio_value << std::endl;
+    std::cout << "Best Parameters: " << "window_size=" << best_window_size
+              << ", entry_threshold=" << best_entry_threshold
+              << ", exit_threshold=" << best_exit_threshold
+              << ", holding_period=" << best_holding_period << std::endl;
 }

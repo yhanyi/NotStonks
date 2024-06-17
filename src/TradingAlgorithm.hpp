@@ -7,11 +7,12 @@
 class TradingAlgorithm {
    protected:
     BrokerAPI& brokerAPI;
+    std::mutex& logMutex;
     double cash;
     int shares;
 
    public:
-    TradingAlgorithm(BrokerAPI& api, double cash, int shares) : brokerAPI(api), cash(cash), shares(shares) {}
+    TradingAlgorithm(BrokerAPI& api, std::mutex& logMutex, double cash, int shares) : brokerAPI(api), logMutex(logMutex), cash(cash), shares(shares) {}
     virtual void run() = 0;
     virtual void trade() = 0;
     double calculate_portfolio_value() const {
