@@ -1,7 +1,8 @@
 # Droptiver
 
-A minimal and experimental repository of quantitative and machine learning code
-written in C++ for learning purposes.
+A minimal and experimental repository of quantitative and machine learning code written in C++ for learning purposes.
+
+Currently, my main focus is to make simple trading strategies with a simulated broker api to see how different trading strategies respond to price changes.
 
 - Compile with `make`, run with `./main`, clean with `make clean`.
 - Upon running `./main`, the user will be prompted to enter a ticker, a start-date, end-date and filename.

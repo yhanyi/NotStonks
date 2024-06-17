@@ -1,7 +1,10 @@
 #include <iostream>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
+
+std::mutex logMutex;
 
 #include "src/Droptiver.hpp"
 
@@ -10,30 +13,29 @@ int main() {
         std::string filename;
         filename = "datasets/finance/" + cli();
 
-        BrokerAPI broker;
-        broker.loadPrices(filename);
-        broker.setDuration(100);  // Set duration to 100 seconds
+        BrokerAPI brokerAPI;
+        brokerAPI.loadPrices(filename);
 
-        // Instantiate trading algorithms
-        MeanReversion meanReversion1(broker, 10000.0, 0);
-        MeanReversion meanReversion2(broker, 10000.0, 0);
-        MomentumTrading momentumTrading(broker, 10000.0, 0);
+        MeanReversion meanReversion(brokerAPI, logMutex, 10000.0, 0);
+        MomentumTrading momentumTrading(brokerAPI, logMutex, 10000.0, 0);
 
-        // Start trading algorithms in separate threads
-        std::thread mean_reversion_thread1(&MeanReversion::run, &meanReversion1);
-        std::thread mean_reversion_thread2(&MeanReversion::run, &meanReversion2);
-        std::thread momentum_trading_thread(&MomentumTrading::run, &momentumTrading);
+        brokerAPI.setDuration(60);  // Run for 60 seconds
 
-        // Wait for all threads to finish
-        broker.startPriceGeneration(1000);
+        std::thread priceGenerationThread([&brokerAPI]() {
+            brokerAPI.startPriceGeneration(1000);  // Generate new price every 1 second
+        });
 
-        mean_reversion_thread1.join();
-        mean_reversion_thread2.join();
-        momentum_trading_thread.join();
+        std::thread meanReversionThread([&meanReversion]() {
+            meanReversion.run();
+        });
 
-        std::cout << "MeanReversion final portfolio value: " << meanReversion1.calculate_portfolio_value() << std::endl;
-        std::cout << "MeanReversion final portfolio value: " << meanReversion2.calculate_portfolio_value() << std::endl;
-        std::cout << "MomentumTrading final portfolio value: " << momentumTrading.calculate_portfolio_value() << std::endl;
+        std::thread momentumTradingThread([&momentumTrading]() {
+            momentumTrading.run();
+        });
+
+        priceGenerationThread.join();
+        meanReversionThread.join();
+        momentumTradingThread.join();
 
         clean();
 
