@@ -1,4 +1,4 @@
-# Droptiver
+# NotStonks
 
 A minimal and experimental repository of quantitative and machine learning code written in C++ for learning purposes.
 
