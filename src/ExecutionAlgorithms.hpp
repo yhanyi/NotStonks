@@ -5,8 +5,34 @@
 
 class ExecutionAlgorithms {
    public:
-    static std::vector<double> vwap(const std::vector<double>& prices, const std::vector<int>& volumes);
-    static std::vector<double> twap(const std::vector<double>& prices, int n);
+    static std::vector<double> vwap(const std::vector<double>& prices, const std::vector<int>& volumes) {
+        std::vector<double> vwap_prices;
+        double cumulative_price_volume = 0.0;
+        double cumulative_volume = 0.0;
+
+        for (size_t i = 0; i < prices.size(); ++i) {
+            cumulative_price_volume += prices[i] * volumes[i];
+            cumulative_volume += volumes[i];
+            vwap_prices.push_back(cumulative_price_volume / cumulative_volume);
+        }
+
+        return vwap_prices;
+    }
+
+    static std::vector<double> twap(const std::vector<double>& prices, int n) {
+        std::vector<double> twap_prices;
+        double cumulative_price = 0.0;
+
+        for (size_t i = 0; i < prices.size(); ++i) {
+            cumulative_price += prices[i];
+            if ((i + 1) % n == 0) {
+                twap_prices.push_back(cumulative_price / n);
+                cumulative_price = 0.0;
+            }
+        }
+
+        return twap_prices;
+    }
 };
 
 #endif  // EXECUTIONALGORITHMS_HPP

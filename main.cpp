@@ -6,7 +6,7 @@
 
 std::mutex logMutex;
 
-#include "src/Droptiver.hpp"
+#include "src/NotStonks.hpp"
 
 int main() {
     try {

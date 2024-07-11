@@ -1,10 +1,9 @@
-#ifndef DROPTIVER_HPP
-#define DROPTIVER_HPP
+#ifndef NOTSTONKS_HPP
+#define NOTSTONKS_HPP
 
 #include "ARIMA.hpp"
 #include "Analysis.hpp"
 #include "AutoCorrelation.hpp"
-#include "Backtesting.hpp"
 #include "Benchmark.hpp"
 #include "BinomialTree.hpp"
 #include "BlackScholes.hpp"
@@ -38,4 +37,4 @@
 #include "TransactionCostAnalysis.hpp"
 #include "mlcpp/MLCPP.hpp"
 
-#endif  // DROPTIVER_HPP
+#endif  // NOTSTONKS_HPP

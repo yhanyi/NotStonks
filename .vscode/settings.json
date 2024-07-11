@@ -63,6 +63,7 @@
     "cstdarg": "cpp",
     "execution": "cpp",
     "unordered_map": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "numeric": "cpp"
   }
 }

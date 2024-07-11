@@ -8,7 +8,7 @@
 #include "HypothesisTesting.hpp"
 #include "KNearestNeighbours.hpp"
 #include "LinearAlgebra.hpp"
-#include "NeuralNetwork.cpp"
+#include "NeuralNetwork.hpp"
 #include "Pooling.hpp"
 #include "SparseMatrix.hpp"
 #include "Statistics.hpp"

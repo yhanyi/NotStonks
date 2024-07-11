@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "Droptiver.hpp"
 #include "MeanReversion.hpp"
+#include "NotStonks.hpp"
 
 Benchmark::Benchmark(const std::string& csv_file) : fd(csv_file) {}
 
