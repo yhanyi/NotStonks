@@ -52,6 +52,17 @@
     "ostream": "cpp",
     "ratio": "cpp",
     "sstream": "cpp",
-    "streambuf": "cpp"
+    "streambuf": "cpp",
+    "bit": "cpp",
+    "memory": "cpp",
+    "random": "cpp",
+    "__hash_table": "cpp",
+    "array": "cpp",
+    "cctype": "cpp",
+    "clocale": "cpp",
+    "cstdarg": "cpp",
+    "execution": "cpp",
+    "unordered_map": "cpp",
+    "variant": "cpp"
   }
 }
