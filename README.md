@@ -1,6 +1,6 @@
 # NotStonks
 
-A minimal and experimental repository of quantitative and machine learning code written in C++ for learning purposes.
+An experimental repository of code written in C++ for learning purposes.
 
 Currently, my main focus is to make simple trading strategies with a simulated broker api to see how different trading strategies respond to price changes.
 
