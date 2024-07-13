@@ -24,8 +24,9 @@ static std::string cli() {
     std::cin >> start_date;
     std::cout << "Enter the end date (Example: YYYY-MM-DD): ";
     std::cin >> end_date;
-    std::cout << "Enter the filename to save the data (Example: data.csv): ";
-    std::cin >> filename;
+    // std::cout << "Enter the filename to save the data (Example: data.csv): ";
+    // std::cin >> filename;
+    filename = "test.csv";
     fetch(ticker, start_date, end_date, filename);
     return filename;
 }

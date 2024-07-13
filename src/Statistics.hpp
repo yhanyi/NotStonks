@@ -20,7 +20,7 @@ class Statistics {
         return (x.size() % 2) ? x[x.size() / 2 + 1] : mean({x[x.size() / 2 - 1], x[x.size() / 2]});
     }
 
-    static double mode(std::vector<double> x) { ; }
+    static double mode(std::vector<double> x) { return 0.0; }
 
     static double standardDeviation(std::vector<double> x) {
         return std::sqrt(variance(x));
