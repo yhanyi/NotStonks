@@ -7,7 +7,9 @@ main.cpp \
 $(wildcard src/*.cpp) \
 # $(wildcard src/mlcpp/*.cpp)
 OBJS = $(SRCS:.cpp=.o)
-TMPFILES = $(wildcard src/*.tmp) $(wildcard src/mlcpp/*.tmp)
+TMPFILES = \
+$(wildcard src/*.tmp) \
+# $(wildcard src/mlcpp/*.tmp)
 CSVFILES = $(wildcard datasets/finance/*.csv)
 TARGET = main
 
