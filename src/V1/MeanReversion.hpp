@@ -18,6 +18,9 @@ class MeanReversion : public TradingAlgorithm {
             trade();
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::cout << "Mean Reversion - Final Cash: " << cash << std::endl;
+        std::cout << "Mean Reversion - Final Stocks: " << shares << std::endl;
     }
 
     void trade() override {

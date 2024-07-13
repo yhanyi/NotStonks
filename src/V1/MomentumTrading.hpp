@@ -16,6 +16,9 @@ class MomentumTrading : public TradingAlgorithm {
             trade();
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::cout << "Momentum Trading - Final Cash: " << cash << std::endl;
+        std::cout << "Momentum Trading - Final Stocks: " << shares << std::endl;
     }
     void trade() override {
         const std::vector<double>& prices = brokerAPI.getPrices();

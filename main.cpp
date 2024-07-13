@@ -4,40 +4,44 @@
 #include <thread>
 #include <vector>
 
+#include "src/NotStonks.hpp"
+
 std::mutex logMutex;
 
-#include "src/NotStonks.hpp"
+void testv1() {
+    std::string filename;
+    filename = "datasets/finance/" + cli();
+
+    BrokerAPI brokerAPI;
+    brokerAPI.loadPrices(filename);
+
+    MeanReversion meanReversion(brokerAPI, logMutex, 10000.0, 0);
+    MomentumTrading momentumTrading(brokerAPI, logMutex, 10000.0, 0);
+
+    brokerAPI.setDuration(30);
+
+    std::thread priceGenerationThread([&brokerAPI]() {
+        brokerAPI.startPriceGeneration(1000);
+    });
+
+    std::thread meanReversionThread([&meanReversion]() {
+        meanReversion.run();
+    });
+
+    std::thread momentumTradingThread([&momentumTrading]() {
+        momentumTrading.run();
+    });
+
+    priceGenerationThread.join();
+    meanReversionThread.join();
+    momentumTradingThread.join();
+
+    clean();
+}
 
 int main() {
     try {
-        std::string filename;
-        filename = "datasets/finance/" + cli();
-
-        BrokerAPI brokerAPI;
-        brokerAPI.loadPrices(filename);
-
-        MeanReversion meanReversion(brokerAPI, logMutex, 10000.0, 0);
-        MomentumTrading momentumTrading(brokerAPI, logMutex, 10000.0, 0);
-
-        brokerAPI.setDuration(60);  // Run for 60 seconds
-
-        std::thread priceGenerationThread([&brokerAPI]() {
-            brokerAPI.startPriceGeneration(1000);  // Generate new price every 1 second
-        });
-
-        std::thread meanReversionThread([&meanReversion]() {
-            meanReversion.run();
-        });
-
-        std::thread momentumTradingThread([&momentumTrading]() {
-            momentumTrading.run();
-        });
-
-        priceGenerationThread.join();
-        meanReversionThread.join();
-        momentumTradingThread.join();
-
-        clean();
+        testv1();
 
         return 0;
 

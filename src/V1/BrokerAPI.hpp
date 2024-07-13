@@ -12,7 +12,7 @@
 #include <thread>
 #include <vector>
 
-#include "FinancialData.hpp"
+#include "../FinancialData.hpp"
 
 extern std::mutex logMutex;
 
@@ -20,7 +20,7 @@ class BrokerAPI {
    public:
     BrokerAPI() : running(false), duration(0) {
         std::srand(std::time(0));
-        prices = {100.0};  // Initialize with a dummy price
+        prices = {100.0};
     }
 
     ~BrokerAPI() {
