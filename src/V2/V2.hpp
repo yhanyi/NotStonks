@@ -1,0 +1,6 @@
+#include "EngineV2.hpp"
+#include "EnumsV2.hpp"
+#include "OrderV2.hpp"
+#include "OrderbookV2.hpp"
+#include "SimpleAlgorithmV2.hpp"
+#include "TradeAlgorithmV2.hpp"
