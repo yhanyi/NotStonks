@@ -20,7 +20,6 @@
 #include "KMeansClustering.hpp"
 #include "LinearRegression.hpp"
 #include "LiquidityMetrics.hpp"
-#include "MarketImpactModels.hpp"
 #include "MeanReversion.hpp"
 #include "MomentumTrading.hpp"
 #include "MonteCarlo.hpp"
