@@ -44,5 +44,6 @@
 #include "Transforms.hpp"
 #include "Utilities.hpp"
 #include "V1/V1.hpp"
+#include "V2/V2.hpp"
 
 #endif  // NOTSTONKS_HPP

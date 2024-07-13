@@ -39,10 +39,36 @@ void testv1() {
     clean();
 }
 
+void testv2() {
+    std::string filename;
+    filename = "datasets/finance/" + cli();
+
+    FinancialData data(filename);
+    std::vector<double> prices = data.get_closing_prices();
+    std::cout << "Size: " << prices.size() << std::endl;
+    int duration = 10;
+
+    TradingEngine engine(prices, duration, RANDOM_WALK);
+    OrderbookV2 orderBook;
+    SimpleAlgorithmV2 simpleAlgorithm(1, engine, orderBook);
+
+    engine.start();
+    simpleAlgorithm.execute();
+
+    std::this_thread::sleep_for(std::chrono::seconds(duration + 2));  // Wait for the simulation to finish
+
+    std::cout << "Initial Portfolio: Cash = " << 10000 << ", Stocks = 0" << std::endl;
+    std::cout << "Final Portfolio: Cash = " << simpleAlgorithm.cash << ", Stocks = " << simpleAlgorithm.stocks << std::endl;
+
+    orderBook.print();
+
+    clean();
+}
+
 int main() {
     try {
-        testv1();
-
+        // testv1();
+        testv2();
         return 0;
 
         // Create a .csv dataset and return the filename for computation.
